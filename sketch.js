@@ -1,10 +1,6 @@
 let img_source;
-
-let risultatoPixelato;
 const sizePixel = 7;
 const diameter = 200;
-
-let showInside = false; // 切换模式：false 为外部像素化，true 为内部像素化
 
 function setup() {
   createCanvas(800, 800);
@@ -14,96 +10,10 @@ function setup() {
 
 function draw() {
   background(220);
-  if (layer_down) {
-    image(layer_down, 0, 0);
-  }
-  if (layer_up) {
-    image(layer_up, 0, 0);
-  }
-  // if (img_source) {
-  //   // 根据模式绘制不同像素化效果
-  //   risultatoPixelato = pixelateImage(img_source, sizePixel, showInside);
-  //   image(risultatoPixelato, 0, 0);
-  // } else {
-  //   // 提示用户选择图像
-  //   fill(0);
-  //   textSize(16);
-  //   text("请在上方选择一个图像文件以开始。", 20, 60);
-  // }
+  drawMaskedLayers();
 }
 
-/**
- * 带圆形遮罩的像素化函数
- * @param {Image} img    输入图像
- * @param {number} size     像素块边长
- * @param {boolean} inside  模式：true 在圆内像素化，false 在圆外像素化
- * @returns {Graphics}    像素化结果图形缓冲
- */
-// function pixelateImage(img, size, inside) {
-//   const w = img.width;
-//   const h = img.height;
-//   const radius = diameter / 2;
-
-//   // 先计算所有像素块的颜色
-//   const cols = floor(w / size);
-//   const rows = floor(h / size);
-//   let pix = [];
-//   for (let i = 0; i < cols; i++) {
-//     pix[i] = [];
-//     for (let j = 0; j < rows; j++) {
-//       let cx = i * size + size * 0.5;
-//       let cy = j * size + size * 0.5;
-//       let c = img.get(cx, cy);
-//       let L = brightness(c);
-//       pix[i][j] = L > 50 ? color("white") : color(0, 102, 204);
-//     }
-//   }
-
-//   // 创建输出缓冲
-//   let output = createGraphics(w, h);
-//   // 如果内部模式，先画原图背景；否则使用圆形遮罩显示原图
-//   if (inside) {
-//     output.image(img, 0, 0);
-//   } else {
-//     // 外部模式：在缓冲中先绘制圆形蒙版后的原图
-//     let maskImg = img.get();
-//     let m1 = createGraphics(w, h);
-//     m1.background(0);
-//     m1.fill(255);
-//     m1.noStroke();
-//     m1.circle(mouseX, mouseY, diameter);
-//     maskImg.mask(m1);
-//     output.image(maskImg, 0, 0);
-//   }
-
-//   // 绘制像素块
-//   output.noStroke();
-//   for (let i = 0; i < cols; i++) {
-//     for (let j = 0; j < rows; j++) {
-//       let x = i * size;
-//       let y = j * size;
-//       let cx = x + size * 0.5;
-//       let cy = y + size * 0.5;
-//       let d = dist(cx, cy, mouseX, mouseY);
-//       if (inside) {
-//         // 圆内像素化
-//         if (d < radius) {
-//           output.fill(pix[i][j]);
-//           output.rect(x, y, size, size);
-//         }
-//       } else {
-//         // 圆外像素化
-//         if (d > radius) {
-//           output.fill(pix[i][j]);
-//           output.rect(x, y, size, size);
-//         }
-//       }
-//     }
-//   }
-//   return output;
-// }
-
-/* 2 - Pixelate image */
+/* 1 - Pixelate image */
 
 /** @type {Graphics} */
 let img_pixelated;
@@ -150,7 +60,7 @@ function pixelateImage(img, size) {
   return output;
 }
 
-/* 3 - Livelli */
+/* 2 - Livelli */
 
 let inverted = false;
 
@@ -171,7 +81,7 @@ function mousePressed() {
   }
 }
 
-/* 1 - Image loading */
+/* 3 - Image loading */
 
 /** @type {FileInput} */
 let imageInput;
@@ -196,5 +106,25 @@ function handleFile(file) {
     });
   } else {
     console.log("不支持的文件类型：", file.type);
+  }
+}
+
+/* 4 - Maschere */
+
+/**
+ * 根据 showInside 标志和当前鼠标位置，
+ * 在圆内/圆外分别显示原图或像素化图像。
+ */
+function drawMaskedLayers() {
+  if (layer_down) {
+    image(layer_down, 0, 0);
+  }
+  if (layer_up) {
+    push();
+    beginClip();
+    ellipse(mouseX, mouseY, diameter);
+    endClip();
+    image(layer_up, 0, 0);
+    pop();
   }
 }
