@@ -1,5 +1,5 @@
 let img_source;
-const sizePixel = 7;
+const sizePixel = 3;
 const diameter = 200;
 
 function setup() {
@@ -70,7 +70,7 @@ let layer_up;
 let layer_down;
 
 function mousePressed() {
-  if (inverted == true) {
+  if (   == true) {
     layer_up = img_source;
     layer_down = img_pixelated;
     inverted = false;
@@ -83,7 +83,6 @@ function mousePressed() {
 
 /* 3 - Image loading */
 
-/** @type {FileInput} */
 let imageInput;
 
 function createImageInput() {
