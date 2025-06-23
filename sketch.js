@@ -70,7 +70,7 @@ let layer_up;
 let layer_down;
 
 function mousePressed() {
-  if (   == true) {
+  if (inverted == true) {
     layer_up = img_source;
     layer_down = img_pixelated;
     inverted = false;
