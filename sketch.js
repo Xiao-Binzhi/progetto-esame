@@ -1,9 +1,9 @@
 let img_source;
-const sizePixel = 3;
-const diameter = 200;
+const sizePixel = 2;
+const diameter = 250;
 
 function setup() {
-  createCanvas(800, 800);
+  createCanvas(800, 620);
   background(220);
   createImageInput();
 }
@@ -11,6 +11,33 @@ function setup() {
 function draw() {
   background(220);
   drawMaskedLayers();
+}
+
+/* 0 - Image loading */
+
+let imageInput;
+
+function createImageInput() {
+  // 创建文件输入元素用于选择图像
+  imageInput = createFileInput(handleFile);
+}
+
+function handleFile(file) {
+  // 仅当文件类型为图像时加载
+  if (file.type === "image") {
+    loadImage(file.data, (loadedImage) => {
+      //
+      img_source = loadedImage;
+      img_source.resize(width, 0); // 按画布宽度调整大小
+      //
+      img_pixelated = pixelateImage(img_source, sizePixel);
+      //
+      layer_down = img_source;
+      layer_up = img_pixelated;
+    });
+  } else {
+    console.log("不支持的文件类型：", file.type);
+  }
 }
 
 /* 1 - Pixelate image */
@@ -81,34 +108,7 @@ function mousePressed() {
   }
 }
 
-/* 3 - Image loading */
-
-let imageInput;
-
-function createImageInput() {
-  // 创建文件输入元素用于选择图像
-  imageInput = createFileInput(handleFile);
-}
-
-function handleFile(file) {
-  // 仅当文件类型为图像时加载
-  if (file.type === "image") {
-    loadImage(file.data, (loadedImage) => {
-      //
-      img_source = loadedImage;
-      img_source.resize(width, 0); // 按画布宽度调整大小
-      //
-      img_pixelated = pixelateImage(img_source, sizePixel);
-      //
-      layer_down = img_source;
-      layer_up = img_pixelated;
-    });
-  } else {
-    console.log("不支持的文件类型：", file.type);
-  }
-}
-
-/* 4 - Maschere */
+/* 3 - Maschere */
 
 /**
  * 根据 showInside 标志和当前鼠标位置，
